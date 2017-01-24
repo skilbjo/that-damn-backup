@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+set -eou pipefail
+
+function what-where(){
+  header=$(df -h | head -1)
+  rootfs=$(df -h | grep '/$')
+  if [[ $(df -h | grep -cE '/dev/sd(a|b)') -eq 0 ]]; then
+    ssd="No SSD found!"
+  else ssd=$(df -h | grep -E '/dev/sd(a|b)'); fi
+  report=""
+
+  report+=$header$'\n'
+  report+=$rootfs$'\n'
+  report+=$ssd$''
+
+  echo "$report"
+  #declare -a vars=($header $rootfs $ssd) && make-report ${vars[@]}
+}
+
+function make-report(){
+  report=""
+  lines="$@"
+  for line in "${lines[@]::${#lines[@]}-1}"; do
+    echo "line is: $line"
+    report+=$line$'\n'
+  done
+  echo "$report"
+}
+
+function take-flash-put-ssd(){
+  in_dir="$1"
+  backup_dir="$2"
+
+  echo "rsync -x = avoid crossing a filesystem boundary"
+  echo "rsync -a = archive, want recursion and want to preserve everything"
+  echo "rsync -u = skip any files which exist on destination and have time that is newer"
+
+  echo "sudo rsync -ax / /mnt"
+}
+
+function take-ssd-put-flash(){
+  in_dir="$1"
+  backup_dir="$2"
+
+  echo "rsync -x = avoid crossing a filesystem boundary"
+  echo "rsync -a = archive, want recursion and want to preserve everything"
+  echo "rsync -u = skip any files which exist on destination and have time that is newer"
+
+  echo "sudo rsync -ax / /mnt"
+}

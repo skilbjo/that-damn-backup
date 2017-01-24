@@ -1,0 +1,5 @@
+Filesystem Size Used Avail Capacity iused ifree %iused Mounted on
+/dev/disk1 233Gi 183Gi 49Gi 79% 1928978 4293038301 0% /
+Filesystem Size Used Avail Capacity iused ifree %iused Mounted on
+/dev/disk1 233Gi 183Gi 49Gi 79% 1928981 4293038298 0% /
+Filesystem      Size   Used  Avail Capacity iused      ifree %iused  Mounted on
