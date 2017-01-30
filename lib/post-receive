@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -eou pipefail
+
+user=$(whoami)
+dir="/home/${user}/deploy/app"
+app="that-damn-backup"
+deploy_dir="$dir/$app"
+cron_dir="/etc/cron.d"
+
+GIT_WORK_TREE="$deploy_dir" git checkout -f
+
+cd "$deploy_dir"
+
+## build steps here ##
+case "$user" in
+  (skilbjo) sudo cp lib/crontab "$cron_dir/$app" ;;
+  (pi) sudo cp lib/crontab-rspi "$cron_dir/$app" ;;
+esac
+
+echo "all done"
+
+exit 0
+
