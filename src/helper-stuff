@@ -17,7 +17,7 @@ function what-where(){
 }
 
 function take-flash-put-ssd(){
-  in_dir="$1"
+  in_dir="/"
   backup_dev=$(df -h | grep -E 'dev/sd(a|b)' | awk '{print $1}')
   backup_dir="/mnt"
 
