@@ -18,7 +18,9 @@ function what-where(){
 
 function take-flash-put-ssd(){
   in_dir="/"
+  set +ue
   backup_dev=$(df -h | grep -E 'dev/sd(a|b)' | awk '{print $1}')
+  set -ue
   backup_dir="/mnt"
 
   echo "reminder, don't overwrite /boot or /etc/fstab"
@@ -26,12 +28,22 @@ function take-flash-put-ssd(){
   echo "rsync -a = archive, want recursion and want to preserve everything"
   echo "rsync -u = skip any files which exist on destination and have time that is newer"
 
-  sudo mount "$backup_dev" "$backup_dir"
+  if [ $(ls -l /mnt | wc -l ) -eq 1 ]; then
+    sudo mount /dev/sda1 "$backup_dir"
+    sleep 2
+    backup_dev=$(df -h | grep -E 'dev/sd(a|b)' | awk '{print $1}')
+    echo "if worked"
+  fi;
 
-  echo "sudo rsync -ax \
-    --exclude="/boot" \
+  if [ -z $backup_dev ]; then
+    echo "in -z backup_dev"
+    echo "No drive attached!"; exit 1;
+  fi;
+
+  sudo rsync -ax \
+    --exclude=/boot \
     --exclude=/etc/fstab \
-    $in_dir $backup_dir"
+    "$in_dir" "$backup_dir"
 }
 
 function take-ssd-put-flash(){
