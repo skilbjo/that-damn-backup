@@ -4,3 +4,7 @@ set -eou pipefail
 source ./helper-stuff
 
 what-where
+
+echo ""
+
+take-flash-put-ssd
