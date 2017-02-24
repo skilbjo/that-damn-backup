@@ -17,42 +17,41 @@ function what-where(){
 }
 
 function take-flash-put-ssd(){
-  in_dir="/"
-  set +ue
-  backup_dev=$(df -h | grep -E 'dev/sd(a|b)' | awk '{print $1}')
-  set -ue
-  backup_dir="/mnt"
-
-  echo "reminder, don't overwrite /boot or /etc/fstab"
-  echo "rsync -x = avoid crossing a filesystem boundary"
-  echo "rsync -a = archive, want recursion and want to preserve everything"
-  echo "rsync -u = skip any files which exist on destination and have time that is newer"
-
-  if [ $(ls -l /mnt | wc -l ) -eq 1 ]; then
-    sudo mount /dev/sda1 "$backup_dir"
+  folders_in_mnt=$(ls -l /mnt | wc -l )
+  if [ $folders_in_mnt -eq 1 ]; then
+    sudo mount /dev/sda1 "/mnt"     # will exit 1 if unsuccessful
     sleep 2
+    set +ue
     backup_dev=$(df -h | grep -E 'dev/sd(a|b)' | awk '{print $1}')
-    echo "if worked"
+    set -ue
   fi;
 
   if [ -z $backup_dev ]; then
-    echo "in -z backup_dev"
     echo "No drive attached!"; exit 1;
   fi;
 
-  sudo rsync -ax \
-    --exclude=/boot \
-    --exclude=/etc/fstab \
-    "$in_dir" "$backup_dir"
+  take-x-put-y "/" "/mnt"
 }
 
 function take-ssd-put-flash(){
-  in_dir="$1"
-  backup_dir="$2"
+  take-x-put-y "/mnt" "/"
+}
+
+function take-x-put-y(){
+  from=$1
+  to=$2
 
   echo "reminder, don't overwrite /boot or /etc/fstab"
+  echo "rsync -a = archive, want recursion and want to preserve everything"
+  echo "rsync -u = skip any files which exist on destination and have time that is newer"
+  echo "rsync -x = avoid crossing a filesystem boundary"
 
-  echo "sudo rsync -ax / /mnt"
+  sudo rsync -aux \
+    --exclude="$to" \
+    --exclude="/var/lib/pacman/local" \
+    --exclude=/boot \
+    --exclude=/etc/fstab \
+    "$from" "$to"
 }
 
 function make-report(){
